@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shoreside Analytics Portal</title>
+  <style>
+    :root {
+      --deep-teal: #004f55;
+      --deep-teal-2: #0b5f66;
+      --soft-teal: #a8cfca;
+      --soft-teal-2: #dcefed;
+      --gold: #f3d17c;
+      --ink: #101722;
+      --muted: #7e746d;
+      --page: #ede9e1;
+      --card: #ffffff;
+      --line: #d9d4cb;
+      --shadow: 0 18px 40px rgba(26, 29, 31, 0.10);
+      --shadow-small: 0 8px 18px rgba(26, 29, 31, 0.08);
+      --radius: 0px;
+      --font: "Aptos", "Segoe UI", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--page);
+    }
+
+    .topbar {
+      height: 66px;
+      background: var(--deep-teal);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      letter-spacing: .05em;
+      font-weight: 800;
+      font-size: 14px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-mark svg {
+      width: 24px;
+      height: 24px;
+      stroke: #fff;
+    }
+
+    .brand-badge {
+      margin-left: 6px;
+      background: var(--gold);
+      color: #14232c;
+      font-size: 11px;
+      letter-spacing: .08em;
+      font-weight: 800;
+      padding: 7px 13px;
+    }
+
+    .admin-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border: 0;
+      background: rgba(255, 255, 255, .08);
+      color: rgba(255,255,255,.82);
+      padding: 12px 16px;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .admin-btn svg {
+      width: 19px;
+      height: 19px;
+      stroke: rgba(255,255,255,.82);
+    }
+
+    main {
+      min-height: calc(100vh - 66px);
+      padding: 88px 24px 72px;
+    }
+
+    .view {
+      display: none;
+      animation: fadeUp .22s ease-out;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 48px;
+    }
+
+    .hero-icon {
+      width: 76px;
+      height: 76px;
+      background: var(--deep-teal);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 26px;
+    }
+
+    .hero-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: var(--gold);
+    }
+
+    .script {
+      color: #5aa7a5;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 19px;
+      margin: 0 0 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 29px;
+      line-height: 1.1;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+    }
+
+    .hero p,
+    .page-intro p {
+      margin: 18px auto 0;
+      max-width: 480px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 16px;
+    }
+
+    .card-grid {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(240px, 1fr));
+      gap: 22px;
+    }
+
+    .nav-card {
+      appearance: none;
+      width: 100%;
+      min-height: 292px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow-small);
+      padding: 40px 28px 34px;
+      text-align: center;
+      cursor: pointer;
+      color: inherit;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .nav-card:hover,
+    .nav-card:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: #c4beb4;
+      outline: none;
+    }
+
+    .tile-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 24px;
+      background: var(--soft-teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tile-icon svg {
+      width: 31px;
+      height: 31px;
+      stroke: var(--deep-teal);
+    }
+
+    .nav-card h2 {
+      margin: 0 0 14px;
+      font-size: 17px;
+      line-height: 1.25;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+    }
+
+    .nav-card p {
+      min-height: 69px;
+      margin: 0 auto 20px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #5aa7a5;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .page-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .back-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 26px;
+    }
+
+    .back-btn {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--deep-teal);
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+    }
+
+    .page-tag {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .page-intro {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .page-intro .tile-icon {
+      margin-bottom: 20px;
+    }
+
+    .page-intro h1 {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .instruction-panel,
+    .upload-panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-small);
+    }
+
+    .instruction-panel {
+      padding: 28px 28px 26px;
+    }
+
+    .instruction-panel h3,
+    .upload-panel h3 {
+      margin: 0 0 14px;
+      font-size: 15px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .instruction-panel p,
+    .instruction-panel li {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .instruction-panel ol {
+      margin: 12px 0 0;
+      padding-left: 19px;
+    }
+
+    .mini-note {
+      margin-top: 22px;
+      padding: 13px 14px;
+      background: var(--soft-teal-2);
+      border-left: 4px solid var(--soft-teal);
+      color: #31565a;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .upload-panel {
+      padding: 28px;
+    }
+
+    .upload-stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .upload-slot {
+      border: 1px solid var(--line);
+      background: #fbfaf8;
+      padding: 18px 18px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .upload-slot.dragover {
+      border-color: var(--deep-teal-2);
+      background: #f2fbfa;
+    }
+
+    .upload-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+    }
+
+    .slot-number {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      border-radius: 50%;
+      background: var(--deep-teal);
+      color: var(--gold);
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .upload-title strong {
+      display: block;
+      margin: 0 0 5px;
+      font-size: 14px;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+    }
+
+    .upload-title span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      max-width: 490px;
+    }
+
+    .file-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      min-width: 185px;
+    }
+
+    .file-input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 1px;
+      height: 1px;
+    }
+
+    .file-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 146px;
+      border: 0;
+      background: var(--soft-teal-2);
+      color: var(--deep-teal-2);
+      padding: 10px 12px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .file-name {
+      max-width: 260px;
+      min-height: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .run-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .status-text {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .primary-btn {
+      appearance: none;
+      border: 0;
+      background: var(--deep-teal);
+      color: #fff;
+      padding: 13px 18px;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      min-width: 150px;
+    }
+
+    .primary-btn:hover {
+      background: #003f44;
+    }
+
+    @media (max-width: 980px) {
+      main {
+        padding-top: 56px;
+      }
+
+      .card-grid,
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-card {
+        min-height: 0;
+      }
+
+      .content-grid {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar {
+        height: auto;
+        min-height: 66px;
+        padding: 14px 18px;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .brand {
+        flex-wrap: wrap;
+      }
+
+      .admin-btn {
+        padding: 10px 12px;
+      }
+
+      main {
+        padding: 42px 16px 54px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .upload-slot {
+        grid-template-columns: 1fr;
+      }
+
+      .file-actions {
+        align-items: stretch;
+      }
+
+      .file-label {
+        width: 100%;
+      }
+
+      .file-name {
+        max-width: 100%;
+        text-align: left;
+      }
+
+      .run-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .primary-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" aria-label="Portal brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3v18" />
+          <path d="M5 9h14" />
+          <path d="M7 21h10" />
+          <path d="M7 9c0 5 2 8 5 8s5-3 5-8" />
+        </svg>
+      </span>
+      <span>Operations Analytics</span>
+      <span class="brand-badge">Shoreside Portal</span>
+    </div>
+    <button class="admin-btn" type="button" aria-label="Admin placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="16" rx="1" />
+        <path d="M9 4v16" />
+        <path d="M3 10h18" />
+      </svg>
+      Admin
+    </button>
+  </header>
+
+  <main>
+    <section id="home" class="view active" aria-labelledby="home-title">
+      <div class="hero">
+        <div class="hero-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 7V5a4 4 0 0 1 8 0v2" />
+            <path d="M5 7h14l1 13H4L5 7Z" />
+            <path d="M9 11h6" />
+          </svg>
+        </div>
+        <p class="script">Operational tools in one place</p>
+        <h1 id="home-title">Shoreside Analytics Portal</h1>
+        <p>Select an analysis below. Each workflow includes upload instructions and is ready to connect to your Python backend.</p>
+      </div>
+
+      <div class="card-grid" role="list">
+        <button class="nav-card" type="button" data-open="arrival" role="listitem">
+          <div class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7h18" />
+              <path d="M6 7v12" />
+              <path d="M18 7v12" />
+              <path d="M3 19h18" />
+              <path d="M9 11h6" />
+              <path d="M9 15h6" />
+            </svg>
+          </div>
+          <h2>Port & Crew Arrival Alignment Verification</h2>
+          <p>Validate arrival timing, port movement, hotel, and transfer data before operational handoff.</p>
+          <span class="card-link">→ Open workflow</span>
+        </button>
+
+        <button class="nav-card" type="button" data-open="optimization" role="listitem">
+          <div class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.5 21 12 17l1.5 4" />
+              <path d="m2.5 16.5 9.5-4 9.5 4" />
+              <path d="M12 3v14" />
+              <path d="m7 7 5-4 5 4" />
+            </svg>
+          </div>
+          <h2>Crew Assignments & Flight Optimization</h2>
+          <p>Compare assignments, itineraries, and schedule data to support optimized movement decisions.</p>
+          <span class="card-link">→ Open workflow</span>
+        </button>
+
+        <button class="nav-card" type="button" data-open="forecast" role="listitem">
+          <div class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19V5" />
+              <path d="M4 19h17" />
+              <path d="M8 16v-5" />
+              <path d="M13 16V8" />
+              <path d="M18 16v-3" />
+            </svg>
+          </div>
+          <h2>Staffing Forecast</h2>
+          <p>Upload staffing, demand, and assignment files to generate future-state coverage insight.</p>
+          <span class="card-link">→ Open workflow</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="arrival" class="view workflow" aria-labelledby="arrival-title">
+      <div class="page-wrap">
+        <div class="back-row">
+          <button class="back-btn" type="button" data-back>← Back to portal</button>
+          <span class="page-tag">Analysis Workflow</span>
+        </div>
+        <div class="page-intro">
+          <div class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7h18" />
+              <path d="M6 7v12" />
+              <path d="M18 7v12" />
+              <path d="M3 19h18" />
+              <path d="M9 11h6" />
+              <path d="M9 15h6" />
+            </svg>
+          </div>
+          <h1 id="arrival-title">Port & Crew Arrival Alignment Verification</h1>
+          <p>Upload the three source files below to prepare the alignment verification analysis.</p>
+        </div>
+        <div class="content-grid">
+          <aside class="instruction-panel">
+            <h3>Instructions</h3>
+            <p>Use this workflow to compare port arrival, crew arrival, hotel, and transfer details.</p>
+            <ol>
+              <li>Upload the port arrival schedule in Excel format.</li>
+              <li>Upload the crew arrival or sign-on list.</li>
+              <li>Upload the hotel or transfer manifest used for reconciliation.</li>
+            </ol>
+            <div class="mini-note">Accepted file types: .xlsx or .xls. The Run Analysis button is currently a placeholder for the Python backend connection.</div>
+          </aside>
+          <section class="upload-panel" data-workflow="Port & Crew Arrival Alignment Verification">
+            <h3>Required uploads</h3>
+            <div class="upload-stack">
+              <div class="upload-slot" data-slot>
+                <div class="upload-title"><span class="slot-number">1</span><div><strong>Port Arrival Schedule</strong><span>Upload the file that contains vessel, port, date, time, and arrival planning details.</span></div></div>
+                <div class="file-actions"><label class="file-label">Select Excel<input class="file-input" type="file" accept=".xlsx,.xls" /></label><span class="file-name">No file selected</span></div>
+              </div>
+              <div class="upload-slot" data-slot>
+                <div class="upload-title"><span class="slot-number">2</span><div><strong>Crew Arrival / Sign-On List</strong><span>Upload the crew movement file with names, joining details, port, date, and assignment references.</span></div></div>
+                <div class="file-actions"><label class="file-label">Select Excel<input class="file-input" type="file" accept=".xlsx,.xls" /></label><span class="file-name">No file selected</span></div>
+              </div>
+              <div class="upload-slot" data-slot>
+                <div class="upload-title"><span class="slot-number">3</span><div><strong>Hotel / Transfer Manifest</strong><span>Upload the support file used to validate hotel, transfer, and arrival logistics.</span></div></div>
+                <div class="file-actions"><label class="file-label">Select Excel<input class="file-input" type="file" accept=".xlsx,.xls" /></label><span class="file-name">No file selected</span></div>
+              </div>
+            </div>
+            <div class="run-row"><span class="status-text">Upload all three files, then run the analysis.</span><button class="primary-btn" type="button" data-run>Run Analysis</button></div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section id="optimization" class="view workflow" aria-labelledby="optimization-title">
+      <div class="page-wrap">
+        <div class="back-row">
+          <button class="back-btn" type="button" data-back>← Back to portal</button>
+          <span class="page-tag">Analysis Workflow</span>
+        </div>
+        <div class="page-intro">
+          <div class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.5 21 12 17l1.5 4" />
+              <path d="m2.5 16.5 9.5-4 9.5 4" />
+              <path d="M12 3v14" />
+              <path d="m7 7 5-4 5 4" />
+            </svg>
+          </div>
+          <h1 id="optimization-title">Crew Assignments & Flight Optimization</h1>
+          <p>Upload the three source files below to prepare the assignment and itinerary optimization analysis.</p>
+        </div>
+        <div class="content-grid">
+          <aside class="instruction-panel">
+            <h3>Instructions</h3>
+            <p>Use this workflow to compare crew assignments against itinerary options and schedule requirements.</p>
+            <ol>
+              <li>Upload the crew assignment roster.</li>
+              <li>Upload the flight itinerary export.</li>
+              <li>Upload the port or vessel schedule used as the operating constraint.</li>
+            </ol>
+            <div class="mini-note">Accepted file types: .xlsx or .xls. The Run Analysis button is currently a placeholder for the Python backend connection.</div>
+          </aside>
+          <section class="upload-panel" data-workflow="Crew Assignments & Flight Optimization">
+            <h3>Required uploads</h3>
+            <div class="upload-stack">
+              <div class="upload-slot" data-slot>
+                <div class="upload-title"><span class="slot-number">1</span><div><strong>Crew Assignment Roster</strong><span>Upload the file with crew member, position, ship, contract, sign-on, and sign-off details.</span></div></div>
+                <div class="file-actions"><label class="file-label">Select Excel<input class="file-input" type="file" accept=".xlsx,.xls" /></label><span class="file-name">No file selected</span></div>
+              </div>
+              <div class="upload-slot" data-slot>
+                <div class="upload-title"><span class="slot-number">2</span><div><strong>Flight Itinerary Export</strong><span>Upload the file with flight, routing, departure, arrival, connection, and booking details.</span></div></div>
+                <div class="file-actions"><label class="file-label">Select Excel<input class="file-input" type="file" accept=".xlsx,.xls" /></label><span class="file-name">No file selected</span></div>
+              </div>
+              <div class="upload-slot" data-slot>
+                <div class="upload-title"><span class="slot-number">3</span><div><strong>Port / Vessel Schedule</strong><span>Upload the schedule file that defines port calls, ship location, and operational timing.</span></div></div>
+                <div class="file-actions"><label class="file-label">Select Excel<input class="file-input" type="file" accept=".xlsx,.xls" /></label><span class="file-name">No file selected</span></div>
+              </div>
+            </div>
+            <div class="run-row"><span class="status-text">Upload all three files, then run the analysis.</span><button class="primary-btn" type="button" data-run>Run Analysis</button></div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section id="forecast" class="view workflow" aria-labelledby="forecast-title">
+      <div class="page-wrap">
+        <div class="back-row">
+          <button class="back-btn" type="button" data-back>← Back to portal</button>
+          <span class="page-tag">Analysis Workflow</span>
+        </div>
+        <div class="page-intro">
+          <div class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19V5" />
+              <path d="M4 19h17" />
+              <path d="M8 16v-5" />
+              <path d="M13 16V8" />
+              <path d="M18 16v-3" />
+            </svg>
+          </div>
+          <h1 id="forecast-title">Staffing Forecast</h1>
+          <p>Upload the three source files below to prepare the staffing forecast analysis.</p>
+        </div>
+        <div class="content-grid">
+          <aside class="instruction-panel">
+            <h3>Instructions</h3>
+            <p>Use this workflow to estimate future coverage needs against forecasted demand and current assignments.</p>
+            <ol>
+              <li>Upload historical staffing data.</li>
+              <li>Upload the occupancy or operational demand forecast.</li>
+              <li>Upload the current assignment roster.</li>
+            </ol>
+            <div class="mini-note">Accepted file types: .xlsx or .xls. The Run Analysis button is currently a placeholder for the Python backend connection.</div>
+          </aside>
+          <section class="upload-panel" data-workflow="Staffing Forecast">
+            <h3>Required uploads</h3>
+            <div class="upload-stack">
+              <div class="upload-slot" data-slot>
+                <div class="upload-title"><span class="slot-number">1</span><div><strong>Historical Staffing Data</strong><span>Upload prior period staffing data by ship, department, position, date, and headcount.</span></div></div>
+                <div class="file-actions"><label class="file-label">Select Excel<input class="file-input" type="file" accept=".xlsx,.xls" /></label><span class="file-name">No file selected</span></div>
+              </div>
+              <div class="upload-slot" data-slot>
+                <div class="upload-title"><span class="slot-number">2</span><div><strong>Occupancy / Demand Forecast</strong><span>Upload the forecast file with future demand, occupancy, sailing, ship, or workload assumptions.</span></div></div>
+                <div class="file-actions"><label class="file-label">Select Excel<input class="file-input" type="file" accept=".xlsx,.xls" /></label><span class="file-name">No file selected</span></div>
+              </div>
+              <div class="upload-slot" data-slot>
+                <div class="upload-title"><span class="slot-number">3</span><div><strong>Current Assignment Roster</strong><span>Upload the active roster used to compare current coverage against forecasted needs.</span></div></div>
+                <div class="file-actions"><label class="file-label">Select Excel<input class="file-input" type="file" accept=".xlsx,.xls" /></label><span class="file-name">No file selected</span></div>
+              </div>
+            </div>
+            <div class="run-row"><span class="status-text">Upload all three files, then run the analysis.</span><button class="primary-btn" type="button" data-run>Run Analysis</button></div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const views = Array.from(document.querySelectorAll('.view'));
+    const openButtons = Array.from(document.querySelectorAll('[data-open]'));
+    const backButtons = Array.from(document.querySelectorAll('[data-back]'));
+
+    function showView(id) {
+      views.forEach(view => view.classList.toggle('active', view.id === id));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    openButtons.forEach(button => {
+      button.addEventListener('click', () => showView(button.dataset.open));
+    });
+
+    backButtons.forEach(button => {
+      button.addEventListener('click', () => showView('home'));
+    });
+
+    function isExcelFile(file) {
+      return /\.(xlsx|xls)$/i.test(file.name);
+    }
+
+    function setFile(slot, file) {
+      const name = slot.querySelector('.file-name');
+      if (!file) {
+        name.textContent = 'No file selected';
+        name.style.color = 'var(--muted)';
+        return;
+      }
+      if (!isExcelFile(file)) {
+        name.textContent = 'Please select .xlsx or .xls';
+        name.style.color = '#9d2f2f';
+        slot.querySelector('.file-input').value = '';
+        return;
+      }
+      name.textContent = file.name;
+      name.style.color = '#31565a';
+    }
+
+    document.querySelectorAll('[data-slot]').forEach(slot => {
+      const input = slot.querySelector('.file-input');
+
+      input.addEventListener('change', event => {
+        setFile(slot, event.target.files[0]);
+      });
+
+      slot.addEventListener('dragover', event => {
+        event.preventDefault();
+        slot.classList.add('dragover');
+      });
+
+      slot.addEventListener('dragleave', () => slot.classList.remove('dragover'));
+
+      slot.addEventListener('drop', event => {
+        event.preventDefault();
+        slot.classList.remove('dragover');
+        const file = event.dataTransfer.files[0];
+        if (!file) return;
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        input.files = dataTransfer.files;
+        setFile(slot, file);
+      });
+    });
+
+    document.querySelectorAll('[data-run]').forEach(button => {
+      button.addEventListener('click', () => {
+        const panel = button.closest('.upload-panel');
+        const status = panel.querySelector('.status-text');
+        const files = Array.from(panel.querySelectorAll('.file-input')).map(input => input.files[0]).filter(Boolean);
+        if (files.length < 3) {
+          status.textContent = 'Please upload all three required files before running the analysis.';
+          status.style.color = '#9d2f2f';
+          return;
+        }
+        status.textContent = `${panel.dataset.workflow}: files staged. Backend connection will run the Python analysis here.`;
+        status.style.color = '#31565a';
+      });
+    });
+  </script>
+</body>
+</html>
